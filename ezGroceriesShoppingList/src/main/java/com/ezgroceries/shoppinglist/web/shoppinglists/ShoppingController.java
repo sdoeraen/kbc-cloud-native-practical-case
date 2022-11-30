@@ -53,7 +53,6 @@ public class ShoppingController {
     }
 
 
-
     @PostMapping(value = "/shopping-lists/{shoppingListId}/cocktails")
     public ResponseEntity<Void> addCocktailToList(@PathVariable(name="shoppingListId") UUID listId, @RequestBody Cocktail cocktail) {
         UUID cocktailId = UUID.fromString(cocktail.getCocktailId());
