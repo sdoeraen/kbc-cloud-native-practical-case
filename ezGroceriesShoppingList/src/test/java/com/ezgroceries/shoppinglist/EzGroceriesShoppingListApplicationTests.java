@@ -6,22 +6,14 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class EzGroceriesShoppingListApplicationTests {
-    private String shoppingUrl = "/shopping-lists";
-    private String cocktailUrl = "/cocktails";
+    private final String shoppingUrl = "/shopping-lists";
+    private final String cocktailUrl = "/cocktails";
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Test
     void contextLoads() {
-    }
-
-    @Test
-    void getCocktails(){
-
-        //ResponseEntity<List<Cocktail>> response = restTemplate.getForEntity(cocktailUrl, List<Cocktail>.class);
-
-
     }
 
 }

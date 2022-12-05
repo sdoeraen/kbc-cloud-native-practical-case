@@ -34,7 +34,7 @@ public interface CocktailDBClient {
                 drinkResource.setIdDrink(cocktail.getCocktailId());
                 drinkResource.setStrDrink(cocktail.getName());
                 drinkResource.setStrGlass(cocktail.getGlass());
-                drinkResource.setStrImageSource(cocktail.getImage());
+                drinkResource.setStrImageSource(cocktail.getImage().toString());
                 drinkResource.setStrInstructions(cocktail.getInstructions());
                 drinkResource.setStrIngredients(cocktail.getIngredients());
                 return drinkResource;

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class JpaCocktailService implements CocktailService {
                         drinkResource.getStrDrink(),
                         drinkResource.getStrGlass(),
                         drinkResource.getStrInstructions(),
-                        drinkResource.getStrImageSource(),
+                        drinkResource.getStrImageSource()!=null ? URI.create(drinkResource.getStrImageSource()) : null,
                         new HashSet<>(Arrays.asList(drinkResource.getStrIngredients())));
                 entry.setValue(Optional.of(cocktailRepository.save(newcocktail)));
                 newones++;
@@ -70,12 +71,7 @@ public class JpaCocktailService implements CocktailService {
         log.info("idDrinks returned by api {}", responseDrinks.keySet().size());
         log.info("idDrinks already in the DB {}", existing);
         log.info("idDrinks persisted in DB {}", newones);
-        /* Could just return this, but lets check the API response anyway
-        return cocktailsDb.values().stream()
-                .filter(dr -> dr.isPresent())
-                .map(dr -> dr.orElseGet(Cocktail::new))
-                .collect(Collectors.toList());
-         */
+
         return getCocktailsFromCocktailDBResponse(responseDrinks, cocktailsDb);
     }
 
@@ -91,6 +87,7 @@ public class JpaCocktailService implements CocktailService {
             cocktail.setIngredients(new HashSet<>(List.of(entry.getValue().getStrIngredients())));
             cocktail.setGlass(entry.getValue().getStrGlass());
             cocktail.setInstructions(entry.getValue().getStrInstructions());
+            cocktail.setImage(entry.getValue().getStrImageSource()!=null ? URI.create(entry.getValue().getStrImageSource()) : null);
             cocktails.add(cocktail);
         }
         return cocktails;
