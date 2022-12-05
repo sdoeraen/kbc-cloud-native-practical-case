@@ -1,9 +1,11 @@
 package com.ezgroceries.shoppinglist.web.cocktails;
 
 import com.ezgroceries.shoppinglist.util.StringSetConverter;
+import com.ezgroceries.shoppinglist.util.UriPersistenceConverter;
 import com.ezgroceries.shoppinglist.web.shoppinglists.ShoppingList;
 
 import javax.persistence.*;
+import java.net.URI;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,8 +32,9 @@ public class Cocktail {
     //For now don't persist these
     String instructions;
 
+    @Convert(converter = UriPersistenceConverter.class)
     @Column(name="image_link")
-    String image;
+    URI image;
 
     String glass;
 
@@ -40,13 +43,15 @@ public class Cocktail {
     public Cocktail(){
     }
 
+    /*
     public Cocktail(String cocktailId, String name, Set<String> ingredients) {
         this.cocktailId = cocktailId;
         this.name = name;
         this.ingredients = ingredients;
     }
+*/
 
-    public Cocktail(String cocktailId, String name, String glass, String instructions, String image, Set<String> ingredients) {
+    public Cocktail(String cocktailId, String name, String glass, String instructions, URI image, Set<String> ingredients) {
         this.cocktailId = cocktailId;
         this.name = name;
         this.glass = glass;
@@ -104,11 +109,11 @@ public class Cocktail {
         this.instructions = instructions;
     }
 
-    public String getImage() {
+    public URI getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(URI image) {
         this.image = image;
     }
 }

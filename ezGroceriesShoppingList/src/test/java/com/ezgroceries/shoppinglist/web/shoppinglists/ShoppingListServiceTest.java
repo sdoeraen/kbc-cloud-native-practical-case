@@ -3,19 +3,20 @@ package com.ezgroceries.shoppinglist.web.shoppinglists;
 import com.ezgroceries.shoppinglist.web.cocktails.Cocktail;
 import com.ezgroceries.shoppinglist.web.cocktails.CocktailRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.util.Assert;
 
+import java.net.URI;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.atMostOnce;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class ShoppingListServiceTest {
@@ -34,11 +35,11 @@ public class ShoppingListServiceTest {
 
     private static final Cocktail margerita = new Cocktail("23b3d85a-3928-41c0-a533-6538a71e17c4", "Margerita",
             "Cocktail glass", "Rub the rim of the glass with the lime slice to make the salt stick to it. Take care to moisten..",
-            "https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg",
+            URI.create("https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg"),
             stubIngredients);
     private static final Cocktail margerita2 = new Cocktail("23b3d85a-3928-41c0-a533-6538a71e17c4", "Margerita",
             "Cocktail glass", "Rub the rim of the glass with the lime slice to make the salt stick to it. Take care to moisten..",
-            "https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg",
+            URI.create("https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg"),
             stubIngredients2);
 
 
@@ -61,20 +62,20 @@ public class ShoppingListServiceTest {
     @Test
     public void testService() {
         //Find all when none available
-        Mockito.when(shoppingListRepository.findAll()).thenReturn(new ArrayList<>());
+        when(shoppingListRepository.findAll()).thenReturn(new ArrayList<>());
         assert (shoppingListService.getAllShoppingLists().size() == 0);
 
         //Find all when 2
-        Mockito.when(shoppingListRepository.findAll()).thenReturn(List.of(myDummyShoppingList, stephanieDummyShoppingList));
+        when(shoppingListRepository.findAll()).thenReturn(List.of(myDummyShoppingList, stephanieDummyShoppingList));
         assert (shoppingListService.getAllShoppingLists().size() == 2);
 
         //Find by ID
         UUID testId = UUID.randomUUID();
-        Mockito.when(shoppingListRepository.findById(testId)).thenReturn(Optional.empty());
-        assertTrue(shoppingListService.getShoppingList(testId).equals(Optional.empty()));
-        assertFalse(shoppingListService.getShoppingList(testId).equals(null));
+        when(shoppingListRepository.findById(testId)).thenReturn(Optional.empty());
+        assertEquals(shoppingListService.getShoppingList(testId), Optional.empty());
+        assertNotEquals(null, shoppingListService.getShoppingList(testId));
 
-        Mockito.when(shoppingListRepository.findById(testId)).thenReturn(Optional.of(myDummyShoppingList));
+        when(shoppingListRepository.findById(testId)).thenReturn(Optional.of(myDummyShoppingList));
         assert (shoppingListService.getShoppingList(testId).equals(Optional.of(myDummyShoppingList)));
 
     }
@@ -85,10 +86,10 @@ public class ShoppingListServiceTest {
         UUID listId2 = UUID.randomUUID();
         UUID cocktailId = UUID.randomUUID();
         myDummyShoppingList.getCocktails();
-        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.of(myDummyShoppingList));
-        Mockito.when(cocktailRepository.findById(cocktailId)).thenReturn(Optional.of(margerita));
+        when(shoppingListRepository.findById(listId)).thenReturn(Optional.of(myDummyShoppingList));
+        when(cocktailRepository.findById(cocktailId)).thenReturn(Optional.of(margerita));
 
-        Mockito.when(shoppingListRepository.findById(listId2)).thenReturn(Optional.empty());
+        when(shoppingListRepository.findById(listId2)).thenReturn(Optional.empty());
 
         boolean success = shoppingListService.addCocktailToShoppingList(listId, cocktailId); //will be OK
         boolean success2 = shoppingListService.addCocktailToShoppingList(listId2, cocktailId);//will fail
@@ -97,6 +98,7 @@ public class ShoppingListServiceTest {
         assertFalse(success2);
         verify(shoppingListRepository, atMostOnce()).save(myDummyShoppingList);
     }
+
 
     @Test
     public void testGetList() {
@@ -107,7 +109,7 @@ public class ShoppingListServiceTest {
         targetIngredients.addAll(margerita.getIngredients());
         targetIngredients.addAll(margerita2.getIngredients());
 
-        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.of(myDummyShoppingList));
+        when(shoppingListRepository.findById(listId)).thenReturn(Optional.of(myDummyShoppingList));
         Optional<ShoppingList> shoppingList = shoppingListService.getShoppingList(listId);
 
         assert(shoppingList.isPresent());
@@ -127,9 +129,11 @@ public class ShoppingListServiceTest {
         targetIngredients.addAll(margerita.getIngredients());
         targetIngredients.addAll(margerita2.getIngredients());
 
-        Mockito.when(shoppingListRepository.findAll()).thenReturn(List.of(myDummyShoppingList, stephanieDummyShoppingList));
+        when(shoppingListRepository.findAll()).thenReturn(List.of(myDummyShoppingList, stephanieDummyShoppingList));
         List<ShoppingList> shoppingList = shoppingListService.getAllShoppingLists();
 
+        //log.info("" + myDummyShoppingList.getIngredients().size());
+        //log.info("" + stephanieDummyShoppingList.getIngredients().size());
         assert(shoppingList.size() > 0);
         assert(shoppingList.size() == 2);
         assert(shoppingList.get(0).getIngredients().size() > 0);
@@ -140,5 +144,25 @@ public class ShoppingListServiceTest {
         assert(shoppingList.get(1).getIngredients().size() == targetIngredients.size());
     }
 
+
+    @Test void testCreation(){
+        UUID listId = UUID.randomUUID();
+        String name = "testList";
+        ShoppingList shoppingList1 = new ShoppingList(listId, name);
+
+        //try with resources to limit test scope - otherwise get-tests are failing
+        try(
+        MockedConstruction<ShoppingList> mocked = Mockito.mockConstruction(ShoppingList.class,
+                (mock, context) -> {
+                    // further stubbings ...
+                    when(mock.getId()).thenReturn(listId);
+                })) {
+
+            when(shoppingListRepository.save(shoppingList1)).thenReturn(shoppingList1);
+            UUID returnId = shoppingListService.createShoppingList(name);
+            Assert.notNull(returnId, "List save must return UUID");
+            assertEquals(returnId, listId);
+        }
+    }
 
 }

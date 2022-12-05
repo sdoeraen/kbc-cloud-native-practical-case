@@ -169,7 +169,8 @@ public class CocktailDBResponse {
 
         public String[] getStrIngredients(){
             ArrayList<String> ingredients = new ArrayList<>();
-            ingredients.add(getStrIngredient1());
+            if (getStrIngredient1()!=null)
+                ingredients.add(getStrIngredient1());
             if (getStrIngredient2()!=null)
                 ingredients.add(getStrIngredient2());
             if (getStrIngredient3()!=null)
